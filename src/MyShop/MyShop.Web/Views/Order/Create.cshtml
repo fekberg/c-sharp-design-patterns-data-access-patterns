@@ -59,6 +59,9 @@
                         <input v-model="shippingAddress" placeholder="Customer address" class="form-control">
                     </div>
                     <div class="form-group">
+                        <input v-model="city" placeholder="Gothenburg" class="form-control">
+                    </div>
+                    <div class="form-group">
                         <input v-model="postalCode" placeholder="### ##" class="form-control">
                     </div>
                     <div class="form-group">
@@ -95,6 +98,7 @@
                 data: {
                     fullname: null,
                     shippingAddress: null,
+                    city: null,
                     postalCode: null,
                     country: null,
 
@@ -129,6 +133,7 @@
                             customer: {
                                 name: this.fullname,
                                 shippingAddress: this.shippingAddress,
+                                city: this.city,
                                 postalCode: this.postalCode,
                                 country: this.country
                             },

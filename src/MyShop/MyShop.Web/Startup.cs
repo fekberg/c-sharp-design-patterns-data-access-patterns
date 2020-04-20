@@ -28,7 +28,6 @@ namespace MyShop.Web
             services.AddTransient<IRepository<Customer>, CustomerRepository>();
             services.AddTransient<IRepository<Order>, OrderRepository>();
             services.AddTransient<IRepository<Product>, ProductRepository>();
-
             services.AddTransient<UnitOfWork>();
         }
 
@@ -36,8 +35,8 @@ namespace MyShop.Web
         {
             using (var context = new ShoppingContext())
             {
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
+                // context.Database.EnsureDeleted();
+                // context.Database.EnsureCreated();
 
                 var camera = new Product { Name = "Canon EOS 70D", Price = 599m };
                 var microphone = new Product { Name = "Shure SM7B", Price = 245m };

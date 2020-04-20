@@ -15,7 +15,9 @@ namespace MyShop.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=orders.db");
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseSqlite("Data Source=orders.db");
         }
     }
 }

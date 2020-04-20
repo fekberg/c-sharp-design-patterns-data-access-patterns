@@ -9,9 +9,9 @@ namespace MyShop.Business.Models
     {
         public Guid OrderId { get; private set; }
 
-        public IEnumerable<LineItem> LineItems { get; set; }
+        public virtual ICollection<LineItem> LineItems { get; set; }
 
-        public Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
         public Guid CustomerId { get; set; }
 
         // SQLite doesn't support DateTimeOffset :(

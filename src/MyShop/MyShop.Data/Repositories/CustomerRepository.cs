@@ -26,7 +26,21 @@ namespace MyShop.Data
 
         public IEnumerable<Customer> Find(Expression<Func<Customer, bool>> predicate)
         {
-            return Context.Customers.Where(predicate).ToList();
+            return Context.Customers
+                .Where(predicate)
+                .ToList()
+                .Select(c =>
+                {
+                    return new CustomerProxy
+                    {
+                        CustomerId = c.CustomerId,
+                        Name = c.Name,
+                        ShippingAddress = c.ShippingAddress,
+                        City = c.City,
+                        PostalCode = c.PostalCode,
+                        Country = c.Country
+                    };
+                });
         }
 
         public Customer Get(Guid id)
@@ -36,7 +50,21 @@ namespace MyShop.Data
 
         public IEnumerable<Customer> All()
         {
-            return Context.Customers.ToList();
+            return Context.Customers
+                .ToList()
+                .Select(c =>
+                {
+                    // Lazy Loading: Virtual Proxy
+                    return new CustomerProxy
+                    {
+                        CustomerId = c.CustomerId,
+                        Name = c.Name,
+                        ShippingAddress = c.ShippingAddress,
+                        City = c.City,
+                        PostalCode = c.PostalCode,
+                        Country = c.Country
+                    };
+                });
         }
 
         public Customer Update(Customer entity)
@@ -45,6 +73,7 @@ namespace MyShop.Data
                 .Single(c => c.CustomerId == entity.CustomerId);
 
             customer.Name = entity.Name;
+            customer.City = entity.City;
             customer.PostalCode = entity.PostalCode;
             customer.ShippingAddress = entity.ShippingAddress;
             customer.Country = entity.Country;

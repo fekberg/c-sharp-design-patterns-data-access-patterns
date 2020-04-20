@@ -80,6 +80,7 @@ namespace MyShop.Web.Controllers
             {
                 customer.ShippingAddress = model.Customer.ShippingAddress;
                 customer.PostalCode = model.Customer.PostalCode;
+                customer.City = model.Customer.City;
                 customer.Country = model.Customer.Country;
 
                 unitOfWork.CustomerRepository.Update(customer);
@@ -90,6 +91,7 @@ namespace MyShop.Web.Controllers
                 {
                     Name = model.Customer.Name,
                     ShippingAddress = model.Customer.ShippingAddress,
+                    City = model.Customer.City,
                     PostalCode = model.Customer.PostalCode,
                     Country = model.Customer.Country
                 };

@@ -27,8 +27,8 @@ namespace MyShop.Data
         public IEnumerable<Order> Find(Expression<Func<Order, bool>> predicate)
         {
             return Context.Orders
-                .Include(order => order.LineItems)
-                .ThenInclude(lineItem => lineItem.Product)
+               // .Include(order => order.LineItems)
+               // .ThenInclude(lineItem => lineItem.Product)
                 .Where(predicate).ToList();
         }
 
@@ -45,8 +45,8 @@ namespace MyShop.Data
         public Order Update(Order entity)
         {
             var order = Context.Orders
-                .Include(o => o.LineItems)
-                .ThenInclude(lineItem => lineItem.Product)
+                //.Include(o => o.LineItems)
+                //.ThenInclude(lineItem => lineItem.Product)
                 .Single(o => o.OrderId == entity.OrderId);
 
             order.OrderDate = entity.OrderDate;
