@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyShop.Business;
 using MyShop.Business.Models;
+using MyShop.Business.Proxies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,11 @@ namespace MyShop.Data
 
         public Customer Get(Guid id)
         {
+            return new GhostCustomer(() => Context.Customers.Single(customer => customer.CustomerId == id))
+            {
+                CustomerId = id
+            };
+
             return Context.Customers.Single(customer => customer.CustomerId == id);
         }
 

@@ -15,11 +15,14 @@
                 <span class="badge badge-secondary badge-pill">@customer.Name</span>
             </h4>
             <img src="data:image/jpeg;base64,@System.Text.Encoding.Default.GetString(customer.ProfilePicture)" width="200" />
+            <img src="data:image/jpeg;base64,@System.Text.Encoding.Default.GetString(customer.ProfilePictureLazy)" width="200" />
+            <img src="data:image/jpeg;base64,@System.Text.Encoding.Default.GetString(customer.ProfilePictureValueHolder)" width="200" />
             <div>
                 <p>@customer.ShippingAddress</p>
                 <p>@customer.PostalCode</p>
                 <p>@customer.Country</p>
             </div>
+            <a href="/Customer/Index/@customer.CustomerId">More details</a>
         </div>
     </div>
 }

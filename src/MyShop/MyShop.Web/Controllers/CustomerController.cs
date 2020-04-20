@@ -18,11 +18,20 @@ namespace MyShop.Web.Controllers
             this.repository = repository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(Guid? id)
         {
-            var customers = repository.All();
+            if (id == null)
+            {
+                var customers = repository.All();
 
-            return View(customers);
+                return View(customers);
+            }
+            else
+            {
+                var customer = repository.Get(id.Value);
+
+                return View(new[] { customer });
+            }
         }
     }
 }
