@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MyShop.Business;
+using MyShop.Business.Models;
 using MyShop.Data;
 
 namespace MyShop.Web
@@ -30,8 +25,11 @@ namespace MyShop.Web
             CreateInitialDatabaseWithDemoData();
 
             services.AddTransient<ShoppingContext>();
+            services.AddTransient<IRepository<Customer>, CustomerRepository>();
             services.AddTransient<IRepository<Order>, OrderRepository>();
             services.AddTransient<IRepository<Product>, ProductRepository>();
+
+            services.AddTransient<UnitOfWork>();
         }
 
         public void CreateInitialDatabaseWithDemoData()

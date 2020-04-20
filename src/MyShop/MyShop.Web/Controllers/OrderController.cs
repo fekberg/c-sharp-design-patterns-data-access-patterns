@@ -15,14 +15,20 @@ namespace MyShop.Web.Controllers
         private readonly ILogger<OrderController> _logger;
         private readonly IRepository<Order> orderRepository;
         private readonly IRepository<Product> productRepository;
+        private readonly IRepository<Customer> customerRepository;
+        private readonly UnitOfWork unitOfWork;
 
         public OrderController(ILogger<OrderController> logger,
              IRepository<Order> orderRepository,
-             IRepository<Product> productRepository)
+             IRepository<Product> productRepository,
+             IRepository<Customer> customerRepository,
+             UnitOfWork unitOfWork)
         {
             _logger = logger;
             this.orderRepository = orderRepository;
             this.productRepository = productRepository;
+            this.customerRepository = customerRepository;
+            this.unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
@@ -42,26 +48,71 @@ namespace MyShop.Web.Controllers
         [HttpPost]
         public IActionResult Create(CreateOrderModel model)
         {
+            if (!model.LineItems.Any()) return BadRequest("Please submit line items");
+
+            if (string.IsNullOrWhiteSpace(model.Customer.Name)) return BadRequest("Customer needs a name");
+
+            //var order = new Order
+            //{
+            //    LineItems = model.LineItems
+            //        .Select(line => new LineItem { ProductId = line.ProductId, Quantity = line.Quantity })
+            //        .ToList(),
+
+            //    Customer = new Customer
+            //    {
+            //        Name = model.Customer.Name,
+            //        ShippingAddress = model.Customer.ShippingAddress,
+            //        PostalCode = model.Customer.PostalCode,
+            //        Country = model.Customer.Country
+            //    }
+            //};
+
+            //orderRepository.Add(order);
+
+            //orderRepository.SaveChanges();
+
+            var customer = //customerRepository
+                unitOfWork.CustomerRepository
+                .Find(c => c.Name == model.Customer.Name)
+                .FirstOrDefault();
+
+            if(customer != null)
+            {
+                customer.ShippingAddress = model.Customer.ShippingAddress;
+                customer.PostalCode = model.Customer.PostalCode;
+                customer.Country = model.Customer.Country;
+
+                unitOfWork.CustomerRepository.Update(customer);
+            }
+            else
+            {
+                customer = new Customer
+                {
+                    Name = model.Customer.Name,
+                    ShippingAddress = model.Customer.ShippingAddress,
+                    PostalCode = model.Customer.PostalCode,
+                    Country = model.Customer.Country
+                };
+            }
+
             var order = new Order
             {
                 LineItems = model.LineItems
                     .Select(line => new LineItem { ProductId = line.ProductId, Quantity = line.Quantity })
                     .ToList(),
 
-                Customer = new Customer
-                {
-                    Name = model.Customer.Name,
-                    ShippingAddress = model.Customer.ShippingAddress,
-                    PostalCode = model.Customer.PostalCode,
-                    Country = model.Customer.Country
-                }
+                Customer = customer
             };
 
-            orderRepository.Add(order);
+            //orderRepository.Add(order);
 
-            orderRepository.SaveChanges();
+            //orderRepository.SaveChanges();
 
-            return RedirectToAction("Index");
+            unitOfWork.OrderRepository.Add(order);
+
+            unitOfWork.SaveChanges();
+
+            return Ok("Order Created");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

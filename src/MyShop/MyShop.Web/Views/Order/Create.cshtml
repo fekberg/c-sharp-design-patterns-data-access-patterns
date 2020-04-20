@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MyShop.Business.Product>
+﻿@model IEnumerable<MyShop.Business.Models.Product>
 
 @{
     ViewData["Title"] = "Create a new order";
@@ -27,7 +27,7 @@
                 <input v-model="selectedQuantity" class="form-control" id="quantity" type="number" value="1" />
             </div>
         </div>
-        <button v-on:click="add" class="btn btn-outline-success">Add to order</button>
+        <button v-on:click="add" :disabled='canAddToOrder' class="btn btn-outline-success">Add to order</button>
     </div>
     <div class="col-4">
         <strong>Current order</strong>
@@ -66,10 +66,27 @@
                     </div>
                 </div>
             </div>
-            <button v-on:click="submit" class="btn btn-success">CREATE ORDER</button>
+            <button v-on:click="submit" :disabled='canSubmitOrder' class="btn btn-success">CREATE ORDER</button>
         </div>
     </div>
 </div>
+
+<div id="orderSuccess" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Creation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts
 {
     <script type="text/javascript">
@@ -85,6 +102,14 @@
                     selectedQuantity: 1,
                     totalPrice: 0,
                     lineItems: new Array()
+                },
+                computed: {
+                    canSubmitOrder: function () {
+                        return this.lineItems.length == 0 || this.fullname == null
+                    },
+                    canAddToOrder: function () {
+                        return this.selectedProduct == ''
+                    }
                 },
                 methods: {
                     add: function () {
@@ -115,8 +140,18 @@
                             })
                         }
 
-                        $.post("/Order/Create", data, function () {
-                            window.location.href='@Url.Action("Index", "Order")';
+                        $.ajax({
+                            url: "/Order/Create",
+                            data: data,
+                            type: 'post',
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                $(".modal-body").html("<strong>ERROR</strong><p>" + XMLHttpRequest.responseText + "</p>")
+                                $('#orderSuccess').modal('show')
+                            },
+                            success: function (data) {
+                                $(".modal-body").html("<strong>Success!</strong><p>The order was successfully created</p>")
+                                $('#orderSuccess').modal('show')
+                            }
                         });
                     }
                 }

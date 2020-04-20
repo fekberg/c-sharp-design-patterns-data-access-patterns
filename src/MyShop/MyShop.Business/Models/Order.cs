@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MyShop.Business
+namespace MyShop.Business.Models
 {
     public class Order
     {
