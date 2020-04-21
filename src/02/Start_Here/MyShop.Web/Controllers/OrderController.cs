@@ -2,45 +2,35 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using MyShop.Domain.Models;
 using MyShop.Infrastructure;
-using MyShop.Infrastructure.Repositories;
 using MyShop.Web.Models;
 
 namespace MyShop.Web.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly ILogger<OrderController> _logger;
-        private readonly IRepository<Order> orderRepository;
-        private readonly IRepository<Product> productRepository;
-        private readonly IRepository<Customer> customerRepository;
-        private readonly UnitOfWork unitOfWork;
+        private ShoppingContext context;
 
-        public OrderController(ILogger<OrderController> logger,
-             IRepository<Order> orderRepository,
-             IRepository<Product> productRepository,
-             IRepository<Customer> customerRepository,
-             UnitOfWork unitOfWork)
+        public OrderController()
         {
-            _logger = logger;
-            this.orderRepository = orderRepository;
-            this.productRepository = productRepository;
-            this.customerRepository = customerRepository;
-            this.unitOfWork = unitOfWork;
+            context = new ShoppingContext();
         }
 
         public IActionResult Index()
         {
-            var orders = orderRepository.Find(order => order.OrderDate > DateTime.UtcNow.AddDays(-1));
+            var orders = context.Orders
+                .Include(order => order.LineItems)
+                .ThenInclude(lineItem => lineItem.Product)
+                .Where(order => order.OrderDate > DateTime.UtcNow.AddDays(-1)).ToList();
 
             return View(orders);
         }
 
         public IActionResult Create()
         {
-            var products = productRepository.All();
+            var products = context.Products.ToList();
 
             return View(products);
         }
@@ -52,50 +42,14 @@ namespace MyShop.Web.Controllers
 
             if (string.IsNullOrWhiteSpace(model.Customer.Name)) return BadRequest("Customer needs a name");
 
-            //var order = new Order
-            //{
-            //    LineItems = model.LineItems
-            //        .Select(line => new LineItem { ProductId = line.ProductId, Quantity = line.Quantity })
-            //        .ToList(),
-
-            //    Customer = new Customer
-            //    {
-            //        Name = model.Customer.Name,
-            //        ShippingAddress = model.Customer.ShippingAddress,
-            //        PostalCode = model.Customer.PostalCode,
-            //        Country = model.Customer.Country
-            //    }
-            //};
-
-            //orderRepository.Add(order);
-
-            //orderRepository.SaveChanges();
-
-            var customer = //customerRepository
-                unitOfWork.CustomerRepository
-                .Find(c => c.Name == model.Customer.Name)
-                .FirstOrDefault();
-
-            if(customer != null)
+            var customer = new Customer
             {
-                customer.ShippingAddress = model.Customer.ShippingAddress;
-                customer.PostalCode = model.Customer.PostalCode;
-                customer.City = model.Customer.City;
-                customer.Country = model.Customer.Country;
-
-                unitOfWork.CustomerRepository.Update(customer);
-            }
-            else
-            {
-                customer = new Customer
-                {
-                    Name = model.Customer.Name,
-                    ShippingAddress = model.Customer.ShippingAddress,
-                    City = model.Customer.City,
-                    PostalCode = model.Customer.PostalCode,
-                    Country = model.Customer.Country
-                };
-            }
+                Name = model.Customer.Name,
+                ShippingAddress = model.Customer.ShippingAddress,
+                City = model.Customer.City,
+                PostalCode = model.Customer.PostalCode,
+                Country = model.Customer.Country
+            };
 
             var order = new Order
             {
@@ -106,13 +60,9 @@ namespace MyShop.Web.Controllers
                 Customer = customer
             };
 
-            //orderRepository.Add(order);
+            context.Orders.Add(order);
 
-            //orderRepository.SaveChanges();
-
-            unitOfWork.OrderRepository.Add(order);
-
-            unitOfWork.SaveChanges();
+            context.SaveChanges();
 
             return Ok("Order Created");
         }

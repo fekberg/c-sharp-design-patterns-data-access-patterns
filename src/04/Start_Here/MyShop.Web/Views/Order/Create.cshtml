@@ -1,0 +1,165 @@
+﻿@model IEnumerable<MyShop.Domain.Models.Product>
+
+@{
+    ViewData["Title"] = "Create a new order";
+}
+
+<h1>Create a new order</h1>
+<div class="row">
+    <div class="col-4">
+        <strong>Add items to order</strong>
+        <div class="form-row mb-lg-5">
+            <div class="col">
+                <label>Select product</label>
+                <select v-model="selectedProduct" class="form-control" id="product">
+                    <option disabled value="">Please select one</option>
+                    @foreach (var product in Model)
+                    {
+                        <option value="@product.ProductId"
+                                v-bind:value="{ productId: '@product.ProductId', name: '@product.Name', price: @product.Price.ToString(System.Globalization.CultureInfo.InvariantCulture) }">
+                            @product.Name
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col">
+                <label>Quantity</label>
+                <input v-model="selectedQuantity" class="form-control" id="quantity" type="number" value="1" />
+            </div>
+        </div>
+        <button v-on:click="add" :disabled='canAddToOrder' class="btn btn-outline-success">Add to order</button>
+    </div>
+    <div class="col-4">
+        <strong>Current order</strong>
+        <div class="mb-lg-5">
+            <div class="mb-lg-5">
+                Items
+                <ul class="list-group">
+                    <li v-for="line in lineItems" :key="product.productId" class="list-group-item d-flex justify-content-between lh-condensed">
+                        <div>
+                            <h6 class="my-0">{{ line.product.name }}</h6>
+                            <small class="text-muted">Quantity: {{ line.quantity }}</small>
+                        </div>
+                        <span class="text-muted">${{ line.product.price *  line.quantity }}</span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total (USD)</span>
+                        <strong>${{ totalPrice }}</strong>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                Customer details
+                <div class="form-group mb-lg-5">
+                    <div class="form-group">
+                        <input v-model="fullname" placeholder="Customer name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input v-model="shippingAddress" placeholder="Customer address" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input v-model="city" placeholder="Gothenburg" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input v-model="postalCode" placeholder="### ##" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input v-model="country" placeholder="Sweden" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <button v-on:click="submit" :disabled='canSubmitOrder' class="btn btn-success">CREATE ORDER</button>
+        </div>
+    </div>
+</div>
+
+<div id="orderSuccess" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Creation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    fullname: null,
+                    shippingAddress: null,
+                    city: null,
+                    postalCode: null,
+                    country: null,
+
+                    selectedProduct: '',
+                    selectedQuantity: 1,
+                    totalPrice: 0,
+                    lineItems: new Array()
+                },
+                computed: {
+                    canSubmitOrder: function () {
+                        return this.lineItems.length == 0 || this.fullname == null
+                    },
+                    canAddToOrder: function () {
+                        return this.selectedProduct == ''
+                    }
+                },
+                methods: {
+                    add: function () {
+                        var lineItem = {
+                            product: this.selectedProduct,
+                            quantity: this.selectedQuantity
+                        }
+
+                        if (product == null) return
+
+                        this.lineItems.push(lineItem)
+
+                        this.totalPrice += lineItem.product.price * lineItem.quantity
+                    },
+                    submit: function () {
+                        var data = {
+                            customer: {
+                                name: this.fullname,
+                                shippingAddress: this.shippingAddress,
+                                city: this.city,
+                                postalCode: this.postalCode,
+                                country: this.country
+                            },
+                            lineItems: this.lineItems.map(function (line) {
+                                return {
+                                    productId: line.product.productId,
+                                    quantity: line.quantity
+                                }
+                            })
+                        }
+
+                        $.ajax({
+                            url: "/Order/Create",
+                            data: data,
+                            type: 'post',
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                $(".modal-body").html("<strong>ERROR</strong><p>" + XMLHttpRequest.responseText + "</p>")
+                                $('#orderSuccess').modal('show')
+                            },
+                            success: function (data) {
+                                $(".modal-body").html("<strong>Success!</strong><p>The order was successfully created</p>")
+                                $('#orderSuccess').modal('show')
+                            }
+                        });
+                    }
+                }
+            })
+    </script>
+}

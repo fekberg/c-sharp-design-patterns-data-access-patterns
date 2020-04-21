@@ -17,8 +17,6 @@ namespace MyShop.Web.Tests
         public void CanCreateOrderWithCorrectModel()
         {
             // ARRANGE 
-            var mockLogger = new Mock<ILogger<OrderController>>();
-
             var orderRepository = new Mock<IRepository<Order>>();
             var productRepository = new Mock<IRepository<Product>>();
             var customerRepository = new Mock<IRepository<Customer>>();
@@ -28,11 +26,11 @@ namespace MyShop.Web.Tests
             unitOfWork.Setup(uow => uow.OrderRepository).Returns(() => orderRepository.Object);
             unitOfWork.Setup(uow => uow.ProductRepository).Returns(() => productRepository.Object);
 
-            var orderController = new OrderController(mockLogger.Object, 
+            var orderController = new OrderController(
                 orderRepository.Object, 
                 productRepository.Object, 
-                customerRepository.Object, 
-                unitOfWork.Object);
+                unitOfWork.Object
+            );
 
             var createOrderModel = new CreateOrderModel 
             {

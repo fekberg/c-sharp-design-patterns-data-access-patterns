@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MyShop.Domain.Models;
 using MyShop.Infrastructure;
 using MyShop.Infrastructure.Repositories;
@@ -12,22 +11,16 @@ namespace MyShop.Web.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly ILogger<OrderController> _logger;
         private readonly IRepository<Order> orderRepository;
         private readonly IRepository<Product> productRepository;
-        private readonly IRepository<Customer> customerRepository;
         private readonly IUnitOfWork unitOfWork;
 
-        public OrderController(ILogger<OrderController> logger,
-             IRepository<Order> orderRepository,
+        public OrderController(IRepository<Order> orderRepository,
              IRepository<Product> productRepository,
-             IRepository<Customer> customerRepository,
              IUnitOfWork unitOfWork)
         {
-            _logger = logger;
             this.orderRepository = orderRepository;
             this.productRepository = productRepository;
-            this.customerRepository = customerRepository;
             this.unitOfWork = unitOfWork;
         }
 
@@ -52,26 +45,7 @@ namespace MyShop.Web.Controllers
 
             if (string.IsNullOrWhiteSpace(model.Customer.Name)) return BadRequest("Customer needs a name");
 
-            //var order = new Order
-            //{
-            //    LineItems = model.LineItems
-            //        .Select(line => new LineItem { ProductId = line.ProductId, Quantity = line.Quantity })
-            //        .ToList(),
-
-            //    Customer = new Customer
-            //    {
-            //        Name = model.Customer.Name,
-            //        ShippingAddress = model.Customer.ShippingAddress,
-            //        PostalCode = model.Customer.PostalCode,
-            //        Country = model.Customer.Country
-            //    }
-            //};
-
-            //orderRepository.Add(order);
-
-            //orderRepository.SaveChanges();
-
-            var customer = //customerRepository
+            var customer =
                 unitOfWork.CustomerRepository
                 .Find(c => c.Name == model.Customer.Name)
                 .FirstOrDefault();
@@ -105,10 +79,6 @@ namespace MyShop.Web.Controllers
 
                 Customer = customer
             };
-
-            //orderRepository.Add(order);
-
-            //orderRepository.SaveChanges();
 
             unitOfWork.OrderRepository.Add(order);
 

@@ -73,7 +73,7 @@ namespace MyShop.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Order/Error");
                 app.UseHsts();
             }
 

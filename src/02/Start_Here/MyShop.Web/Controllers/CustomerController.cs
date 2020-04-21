@@ -1,34 +1,30 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using MyShop.Domain.Models;
-using MyShop.Infrastructure.Repositories;
+using MyShop.Infrastructure;
 
 namespace MyShop.Web.Controllers
 {
     public class CustomerController : Controller
     {
-        private readonly ILogger<CustomerController> _logger;
-        private readonly IRepository<Customer> repository;
+        private ShoppingContext context;
 
-        public CustomerController(ILogger<CustomerController> logger,
-            IRepository<Customer> repository)
+        public CustomerController()
         {
-            _logger = logger;
-            this.repository = repository;
+            context = new ShoppingContext();
         }
 
         public IActionResult Index(Guid? id)
         {
             if (id == null)
             {
-                var customers = repository.All();
+                var customers = context.Products.ToList();
 
                 return View(customers);
             }
             else
             {
-                var customer = repository.Get(id.Value);
+                var customer = context.Products.Find(id.Value);
 
                 return View(new[] { customer });
             }
