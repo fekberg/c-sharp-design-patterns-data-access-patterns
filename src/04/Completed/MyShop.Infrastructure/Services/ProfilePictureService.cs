@@ -5,7 +5,7 @@ namespace MyShop.Infrastructure.Services
     public class ProfilePictureService
     {
         // Should be async when doing an API call
-        public byte[] GetFor(string lookup)
+        public static byte[] GetFor(string lookup)
         {
             // Fetch from some 3rd party API based on the e-mail or name
 

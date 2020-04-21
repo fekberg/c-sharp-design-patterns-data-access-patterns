@@ -107,10 +107,10 @@ namespace MyShop.Infrastructure.Lazy.Ghosts
                 base.PostalCode = customer.PostalCode;
                 base.Country = customer.Country;
 
-                ProfilePictureValueHolder = new ProfilePictureValueHolder(new ProfilePictureService());
+                ProfilePictureValueHolder = new ProfilePictureValueHolder();
                 ProfilePictureLazy = new Lazy<byte[]>(() =>
                 {
-                    return new ProfilePictureService().GetFor(customer.Name);
+                    return ProfilePictureService.GetFor(customer.Name);
                 });
 
                 status = LoadStatus.LOADED;

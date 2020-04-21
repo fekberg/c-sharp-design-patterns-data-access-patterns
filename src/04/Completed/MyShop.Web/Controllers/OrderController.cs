@@ -16,13 +16,13 @@ namespace MyShop.Web.Controllers
         private readonly IRepository<Order> orderRepository;
         private readonly IRepository<Product> productRepository;
         private readonly IRepository<Customer> customerRepository;
-        private readonly UnitOfWork unitOfWork;
+        private readonly IUnitOfWork unitOfWork;
 
         public OrderController(ILogger<OrderController> logger,
              IRepository<Order> orderRepository,
              IRepository<Product> productRepository,
              IRepository<Customer> customerRepository,
-             UnitOfWork unitOfWork)
+             IUnitOfWork unitOfWork)
         {
             _logger = logger;
             this.orderRepository = orderRepository;

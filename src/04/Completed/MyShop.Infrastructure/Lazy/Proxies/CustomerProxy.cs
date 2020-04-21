@@ -13,7 +13,7 @@ namespace MyShop.Infrastructure.Lazy.Proxies
                 if (base.ProfilePicture == null)
                 {
                     // Could be injected as an interface
-                    base.ProfilePicture = new ProfilePictureService().GetFor(Name);
+                    base.ProfilePicture = ProfilePictureService.GetFor(Name);
                 }
 
                 return base.ProfilePicture;
