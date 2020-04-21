@@ -108,7 +108,7 @@ namespace MyShop.Infrastructure.Lazy.Ghosts
                 base.Country = customer.Country;
 
                 ProfilePictureValueHolder = new ProfilePictureValueHolder();
-                ProfilePictureLazy = new Lazy<byte[]>(() =>
+                ProfilePictureValueHolder2 = new Lazy<byte[]>(() =>
                 {
                     return ProfilePictureService.GetFor(customer.Name);
                 });

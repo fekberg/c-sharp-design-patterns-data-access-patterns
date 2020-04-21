@@ -40,9 +40,14 @@ namespace MyShop.Infrastructure.Repositories
         public override Customer Get(Guid id)
         {
             // Lazy: Ghost
+            var customerId = context.Customers
+                .Where(c => c.CustomerId == id)
+                .Select(c=> c.CustomerId)
+                .Single();
+
             return new GhostCustomer(() => base.Get(id))
             {
-                CustomerId = id
+                CustomerId = customerId
             };
         }
 
@@ -62,7 +67,7 @@ namespace MyShop.Infrastructure.Repositories
                 PostalCode = customer.PostalCode,
                 Country = customer.Country,
                 ProfilePictureValueHolder = new ProfilePictureValueHolder(),
-                ProfilePictureLazy = new Lazy<byte[]>(() =>
+                ProfilePictureValueHolder2 = new Lazy<byte[]>(() =>
                 {
                     return ProfilePictureService.GetFor(customer.Name);
                 })

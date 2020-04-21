@@ -4,20 +4,19 @@ using MyShop.Infrastructure.Services;
 namespace MyShop.Infrastructure.Lazy.Proxies
 {
     // Lazy Loading: Virtual Proxy
-    public class CustomerProxy : Customer
+public class CustomerProxy : Customer
+{
+    public override byte[] ProfilePicture
     {
-        public override byte[] ProfilePicture
+        get
         {
-            get
+            if (base.ProfilePicture == null)
             {
-                if (base.ProfilePicture == null)
-                {
-                    // Could be injected as an interface
-                    base.ProfilePicture = ProfilePictureService.GetFor(Name);
-                }
-
-                return base.ProfilePicture;
+                base.ProfilePicture = ProfilePictureService.GetFor(Name);
             }
+
+            return base.ProfilePicture;
         }
     }
+}
 }

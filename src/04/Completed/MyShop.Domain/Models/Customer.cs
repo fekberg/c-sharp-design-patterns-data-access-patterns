@@ -1,4 +1,5 @@
-﻿using MyShop.Domain.ValueHolders;
+﻿using MyShop.Domain.Services;
+using MyShop.Domain.ValueHolders;
 using System;
 
 namespace MyShop.Domain.Models
@@ -18,20 +19,36 @@ namespace MyShop.Domain.Models
         public virtual byte[] ProfilePicture { get; set; }
 
         // Lazy Loading: Lazy Initialization
-        public Lazy<byte[]> ProfilePictureLazy { get; set; }
-
-        public byte[] ProfilePicture2
+        private byte[] profilePicture;
+        public virtual byte[] ProfilePicture2
         {
             get
             {
-                return ProfilePictureLazy.Value;
+                if (profilePicture == null)
+                {
+                    profilePicture = ProfilePictureService.GetFor(Name);
+                }
+
+                return profilePicture;
+            }
+            set
+            {
+                profilePicture = value;
             }
         }
 
         // Lazy Loading: Value Holder
         public IValueHolder<byte[]> ProfilePictureValueHolder { get; set; }
-
+        public Lazy<byte[]> ProfilePictureValueHolder2 { get; set; }
         public byte[] ProfilePicture3
+        {
+            get
+            {
+                return ProfilePictureValueHolder2.Value;
+            }
+        }
+
+        public byte[] ProfilePicture4
         {
             get
             {
