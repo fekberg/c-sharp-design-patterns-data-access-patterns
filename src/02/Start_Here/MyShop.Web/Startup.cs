@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyShop.Domain.Models;
 using MyShop.Infrastructure;
-using MyShop.Infrastructure.Repositories;
 
 namespace MyShop.Web
 {
@@ -33,9 +32,7 @@ namespace MyShop.Web
             CreateInitialDatabase();
 
             services.AddTransient<ShoppingContext>();
-            services.AddTransient<IRepository<Customer>, CustomerRepository>();
-            services.AddTransient<IRepository<Order>, OrderRepository>();
-            services.AddTransient<IRepository<Product>, ProductRepository>();
+       
         }
 
         public void CreateInitialDatabase()
@@ -51,15 +48,13 @@ namespace MyShop.Web
                 var phone = new Product { Name = "Android Phone", Price = 259.59m };
                 var speakers = new Product { Name = "5.1 Speaker System", Price = 799.99m };
 
-                var productRepository = new ProductRepository(context);
+                context.Products.Add(camera);
+                context.Products.Add(microphone);
+                context.Products.Add(light);
+                context.Products.Add(phone);
+                context.Products.Add(speakers);
 
-                productRepository.Add(camera);
-                productRepository.Add(microphone);
-                productRepository.Add(light);
-                productRepository.Add(phone);
-                productRepository.Add(speakers);
-
-                productRepository.SaveChanges();
+                context.SaveChanges();
             }
         }
 
