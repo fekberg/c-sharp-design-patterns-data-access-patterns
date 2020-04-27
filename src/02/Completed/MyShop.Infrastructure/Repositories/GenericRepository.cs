@@ -5,7 +5,8 @@ using System.Linq.Expressions;
 
 namespace MyShop.Infrastructure.Repositories
 {
-    public abstract class GenericRepository<T> : IRepository<T> where T : class
+    public abstract class GenericRepository<T> 
+        : IRepository<T> where T : class
     {
         protected ShoppingContext context;
 
@@ -36,7 +37,6 @@ namespace MyShop.Infrastructure.Repositories
         public virtual IEnumerable<T> All()
         {
             return context.Set<T>()
-                .AsQueryable()
                 .ToList();
         }
 

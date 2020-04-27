@@ -12,7 +12,7 @@ namespace MyShop.Infrastructure
         void SaveChanges();
     }
 
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private ShoppingContext context;
 

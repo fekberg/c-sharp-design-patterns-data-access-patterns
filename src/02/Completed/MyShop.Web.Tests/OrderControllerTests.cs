@@ -47,7 +47,8 @@ namespace MyShop.Web.Tests
 
             // ASSERT
 
-            orderRepository.Verify(r => r.Add(It.IsAny<Order>()), Times.AtLeastOnce());
+            orderRepository.Verify(r => r.Add(It.IsAny<Order>()), 
+                Times.AtLeastOnce());
         }
     }
 }

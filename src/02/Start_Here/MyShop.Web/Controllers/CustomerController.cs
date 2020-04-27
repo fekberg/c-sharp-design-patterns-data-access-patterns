@@ -18,13 +18,13 @@ namespace MyShop.Web.Controllers
         {
             if (id == null)
             {
-                var customers = context.Products.ToList();
+                var customers = context.Customers.ToList();
 
                 return View(customers);
             }
             else
             {
-                var customer = context.Products.Find(id.Value);
+                var customer = context.Customers.Find(id.Value);
 
                 return View(new[] { customer });
             }
