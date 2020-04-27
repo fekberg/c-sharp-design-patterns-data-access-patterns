@@ -26,11 +26,7 @@ namespace MyShop.Web.Tests
             unitOfWork.Setup(uow => uow.OrderRepository).Returns(() => orderRepository.Object);
             unitOfWork.Setup(uow => uow.ProductRepository).Returns(() => productRepository.Object);
 
-            var orderController = new OrderController(
-                orderRepository.Object, 
-                productRepository.Object, 
-                unitOfWork.Object
-            );
+            var orderController = new OrderController(unitOfWork.Object);
 
             var createOrderModel = new CreateOrderModel 
             {

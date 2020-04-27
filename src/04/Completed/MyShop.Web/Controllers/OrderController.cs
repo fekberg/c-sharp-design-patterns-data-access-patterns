@@ -4,36 +4,29 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using MyShop.Domain.Models;
 using MyShop.Infrastructure;
-using MyShop.Infrastructure.Repositories;
 using MyShop.Web.Models;
 
 namespace MyShop.Web.Controllers
 {
     public class OrderController : Controller
     {
-        private readonly IRepository<Order> orderRepository;
-        private readonly IRepository<Product> productRepository;
         private readonly IUnitOfWork unitOfWork;
 
-        public OrderController(IRepository<Order> orderRepository,
-             IRepository<Product> productRepository,
-             IUnitOfWork unitOfWork)
+        public OrderController(IUnitOfWork unitOfWork)
         {
-            this.orderRepository = orderRepository;
-            this.productRepository = productRepository;
             this.unitOfWork = unitOfWork;
         }
 
         public IActionResult Index()
         {
-            var orders = orderRepository.Find(order => order.OrderDate > DateTime.UtcNow.AddDays(-1));
+            var orders = unitOfWork.OrderRepository.Find(order => order.OrderDate > DateTime.UtcNow.AddDays(-1));
 
             return View(orders);
         }
 
         public IActionResult Create()
         {
-            var products = productRepository.All();
+            var products = unitOfWork.ProductRepository.All();
 
             return View(products);
         }
@@ -45,8 +38,7 @@ namespace MyShop.Web.Controllers
 
             if (string.IsNullOrWhiteSpace(model.Customer.Name)) return BadRequest("Customer needs a name");
 
-            var customer =
-                unitOfWork.CustomerRepository
+            var customer = unitOfWork.CustomerRepository
                 .Find(c => c.Name == model.Customer.Name)
                 .FirstOrDefault();
 

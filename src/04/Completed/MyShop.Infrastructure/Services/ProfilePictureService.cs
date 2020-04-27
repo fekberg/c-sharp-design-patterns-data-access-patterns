@@ -1,6 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace MyShop.Infrastructure.Services
+namespace MyShop.Infrastructure
 {
     public class ProfilePictureService
     {

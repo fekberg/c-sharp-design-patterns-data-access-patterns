@@ -1,17 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace MyShop.Domain.ValueHolders
+namespace MyShop.Domain.Lazy
 {
     public interface IValueHolder<T>
     {
         T GetValue(object parameter);
     }
-
     public class ValueHolder<T> : IValueHolder<T>
     {
-        private T value;
-
         private readonly Func<object, T> getValue;
+        private T value;
 
         public ValueHolder(Func<object, T> getValue)
         {

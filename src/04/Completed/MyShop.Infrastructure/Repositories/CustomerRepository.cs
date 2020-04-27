@@ -1,12 +1,10 @@
-﻿using MyShop.Domain.Models;
+﻿using MyShop.Domain.Lazy;
+using MyShop.Domain.Models;
 using MyShop.Infrastructure.Lazy.Ghosts;
 using MyShop.Infrastructure.Lazy.Proxies;
-using MyShop.Infrastructure.Services;
-using MyShop.Infrastructure.ValueHolders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace MyShop.Infrastructure.Repositories
 {
@@ -14,6 +12,31 @@ namespace MyShop.Infrastructure.Repositories
     {
         public CustomerRepository(ShoppingContext context) : base(context)
         {
+        }
+
+        public override Customer Get(Guid id)
+        {
+            var customerId = context.Customers
+                .Where(c => c.CustomerId == id)
+                .Select(c => c.CustomerId)
+                .Single();
+
+            return new GhostCustomer(() => base.Get(id))
+            {
+                CustomerId = customerId
+            };
+        }
+
+        public override IEnumerable<Customer> All()
+        {
+            // Lazy Loading: Value Holder
+            //ProfilePictureValueHolder = new ValueHolder<byte[]>();
+            //ProfilePictureValueHolder = new Lazy<byte[]>(() =>
+            //{
+            //    return ProfilePictureService.GetFor(customer.Name);
+            //});
+
+            return base.All().Select(MapToProxy);
         }
 
         public override Customer Update(Customer entity)
@@ -30,32 +53,6 @@ namespace MyShop.Infrastructure.Repositories
             return base.Update(entity);
         }
 
-        public override IEnumerable<Customer> Find(Expression<Func<Customer, bool>> predicate)
-        {
-            var result = base.Find(predicate);
-
-            return result.Select(c => MapToProxy(c));
-        }
-
-        public override Customer Get(Guid id)
-        {
-            // Lazy: Ghost
-            var customerId = context.Customers
-                .Where(c => c.CustomerId == id)
-                .Select(c=> c.CustomerId)
-                .Single();
-
-            return new GhostCustomer(() => base.Get(id))
-            {
-                CustomerId = customerId
-            };
-        }
-
-        public override IEnumerable<Customer> All()
-        {
-            return base.All().Select(c => MapToProxy(c));
-        }
-
         private CustomerProxy MapToProxy(Customer customer)
         {
             return new CustomerProxy
@@ -65,12 +62,7 @@ namespace MyShop.Infrastructure.Repositories
                 ShippingAddress = customer.ShippingAddress,
                 City = customer.City,
                 PostalCode = customer.PostalCode,
-                Country = customer.Country,
-                ProfilePictureValueHolder = new ProfilePictureValueHolder(),
-                ProfilePictureValueHolder2 = new Lazy<byte[]>(() =>
-                {
-                    return ProfilePictureService.GetFor(customer.Name);
-                })
+                Country = customer.Country
             };
         }
     }

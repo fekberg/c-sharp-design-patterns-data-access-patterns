@@ -1,8 +1,8 @@
 ﻿using MyShop.Domain.Models;
 using MyShop.Infrastructure.Lazy.Proxies;
-using MyShop.Infrastructure.Services;
-using MyShop.Infrastructure.ValueHolders;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MyShop.Infrastructure.Lazy.Ghosts
 {
@@ -14,7 +14,13 @@ namespace MyShop.Infrastructure.Lazy.Ghosts
         public bool IsGhost => status == LoadStatus.GHOST;
         public bool IsLoaded => status == LoadStatus.LOADED;
 
-        public override string Name 
+        public GhostCustomer(Func<Customer> load) : base()
+        {
+            this.load = load;
+            status = LoadStatus.GHOST;
+        }
+
+        public override string Name
         {
             get
             {
@@ -107,20 +113,8 @@ namespace MyShop.Infrastructure.Lazy.Ghosts
                 base.PostalCode = customer.PostalCode;
                 base.Country = customer.Country;
 
-                ProfilePictureValueHolder = new ProfilePictureValueHolder();
-                ProfilePictureValueHolder2 = new Lazy<byte[]>(() =>
-                {
-                    return ProfilePictureService.GetFor(customer.Name);
-                });
-
                 status = LoadStatus.LOADED;
             }
-        }
-
-        public GhostCustomer(Func<Customer> load) : base()
-        {
-            status = LoadStatus.GHOST;
-            this.load = load;
         }
     }
 

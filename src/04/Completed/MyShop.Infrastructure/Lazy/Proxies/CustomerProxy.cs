@@ -1,22 +1,23 @@
 ﻿using MyShop.Domain.Models;
-using MyShop.Infrastructure.Services;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MyShop.Infrastructure.Lazy.Proxies
 {
-    // Lazy Loading: Virtual Proxy
-public class CustomerProxy : Customer
-{
-    public override byte[] ProfilePicture
+    public class CustomerProxy : Customer
     {
-        get
+        public override byte[] ProfilePicture
         {
-            if (base.ProfilePicture == null)
+            get
             {
-                base.ProfilePicture = ProfilePictureService.GetFor(Name);
-            }
+                if (base.ProfilePicture == null)
+                {
+                    base.ProfilePicture = ProfilePictureService.GetFor(Name);
+                }
 
-            return base.ProfilePicture;
+                return base.ProfilePicture;
+            }
         }
     }
-}
 }
