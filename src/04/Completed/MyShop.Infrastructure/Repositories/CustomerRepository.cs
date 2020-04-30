@@ -50,7 +50,7 @@ namespace MyShop.Infrastructure.Repositories
             customer.ShippingAddress = entity.ShippingAddress;
             customer.Country = entity.Country;
 
-            return base.Update(entity);
+            return base.Update(customer);
         }
 
         private CustomerProxy MapToProxy(Customer customer)
