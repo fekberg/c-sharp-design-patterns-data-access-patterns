@@ -3,7 +3,6 @@ using MyShop.Domain.Models;
 
 namespace MyShop.Infrastructure
 {
-
     public class ShoppingContext : DbContext
     {
         public DbSet<Customer> Customers { get; set; }
